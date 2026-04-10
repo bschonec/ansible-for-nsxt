@@ -74,7 +74,12 @@ def main():
   mgr_hostname = module.params['hostname']
   mgr_username = module.params['username']
   mgr_password = module.params['password']
-  mgr_domain = module.params['domain']
+  
+  argument_spec.update (
+    dict(
+      mgr_domain = dict(type='str', default='domain)
+    )
+  )
 
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
@@ -83,7 +88,7 @@ def main():
     (rc, resp) = request(manager_url+ '/infra/domains/' + mgr_domain + '/groups', headers=dict(Accept='application/json'),
                     url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
   except Exception as err:
-    module.fail_json(msg='Error accessing host switch profiles. Error [%s]' % (to_native(err)))
+    module.fail_json(msg='Error accessing groups. Error [%s]' % (to_native(err)))
 
   module.exit_json(changed=changed, **resp)
 if __name__ == '__main__':
