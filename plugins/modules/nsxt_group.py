@@ -134,8 +134,8 @@ def main():
 
     # The NSX API will allow us to use the PATCH method to both create and modify the group.
     payload = json.dumps({
-      'description': description
-      'display_name': display_name
+      'description': description,
+      'display_name': display_name,
     })
 
     try:
