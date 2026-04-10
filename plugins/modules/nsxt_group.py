@@ -140,7 +140,7 @@ def main():
       })
       (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=foo, headers=headers, method='PATCH',
                               url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
-      module.fail_json(msg="Group with display name \'%s\' already exists." % display_name)  
+      #module.fail_json(msg="Group with display name \'%s\' already exists." % display_name)  
     try:
       headers = dict(Accept="application/json")
       headers['Content-Type'] = 'application/json'
