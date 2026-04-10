@@ -135,6 +135,19 @@ def main():
     module.log(f"Domain: {domain}")
     module.log(f"Display Name: {display_name}")
 
+    # add the group
+    if group_with_display_name:
+      module.fail_json(msg="Group with display name \'%s\' already exists." % display_name)  
+    try:
+      headers = dict(Accept="application/json")
+      headers['Content-Type'] = 'application/json'
+      request_data = json.dumps(certificate_params)
+      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/group/' + display_name, data=request_data, headers=headers, method='POST',
+                              url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
+    except Exception as err:
+      module.fail_json(msg="Failed to add certificate.\n Error: [%s].\n Request_body[%s]." % (to_native(err), request_data))
+
+    time.sleep(5)
     module.exit_json(changed=True, result=resp, message="certificate created. Response: [%s]" % str(resp))
 
 if __name__ == '__main__':
