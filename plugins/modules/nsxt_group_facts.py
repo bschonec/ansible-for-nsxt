@@ -78,11 +78,11 @@ def main():
   mgr_domain = 'default'
   #mgr_domain = module.params['domain']
 
-  manager_url = 'https://nsx.nfii.com/api/v1'.format(mgr_hostname)
+  manager_url = 'https://nsx.nfii.com/policy/api/v1'.format(mgr_hostname)
 
   changed = False
   try:
-    (rc, resp) = request(manager_url+ '/policy/api/v1/infra/domains/' + mgr_domain + '/groups', headers=dict(Accept='application/json'),
+    (rc, resp) = request(manager_url+ '/infra/domains/' + mgr_domain + '/groups', headers=dict(Accept='application/json'),
                     url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
   except Exception as err:
     module.fail_json(msg='Error accessing host switch profiles. Error [%s]' % (to_native(err)))
