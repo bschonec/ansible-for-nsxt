@@ -3,7 +3,7 @@
 #
 # Copyright 2018 VMware, Inc.
 # SPDX-License-Identifier: BSD-2-Clause OR GPL-3.0-only
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
 # BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 # IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
@@ -16,7 +16,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
+ANSIBLE_METADATA = {'metadata_version': '1.0',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
@@ -82,7 +82,7 @@ def main():
 
   changed = False
   try:
-    (rc, resp) = request(manager_url+ '/policy/api/v1/infra/domains/default/groups', headers=dict(Accept='application/json'),
+    (rc, resp) = request(manager_url+ '/policy/api/v1/infra/domains/DDDDDDDDDDDDDDDDDdefault/groups', headers=dict(Accept='application/json'),
                     url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
   except Exception as err:
     module.fail_json(msg='Error accessing host switch profiles. Error [%s]' % (to_native(err)))
