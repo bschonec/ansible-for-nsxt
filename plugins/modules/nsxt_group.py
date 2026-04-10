@@ -88,7 +88,7 @@ def get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, 
     module.fail_json(msg='Error accessing trust management certificates. Error [%s]' % (to_native(err)))
   return resp
 
-def get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, display_name):
+def get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name):
   '''
   result: returns the group object with the display name provided
   '''
