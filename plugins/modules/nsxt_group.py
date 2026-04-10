@@ -124,13 +124,15 @@ def main():
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
   group_with_display_name = get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
+# POST - create if doesn't exist
+# PATCH - update existing or create if doesn't exist
+# DELETE - captain obvious
 
   if state == 'present':
 
     # Does the group already exist?  If not, then there's no need to create it.
-# POST - create if doesn't exist
-# PATCH - update existing or create if doesn't exist
-# DELETE - captain obvious
+    if group_with_display_name:
+      module.exit_json(changed=False, result=resp, message="Group already exists. Response: [%s]" % str(resp))
 
     # The NSX API will allow us to use the PATCH method to both create and modify the group.
     payload = json.dumps({
@@ -146,7 +148,7 @@ def main():
     except Exception as err:
       module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
 
-    module.exit_json(changed=True, result=rc, message="Group created. Response: [%s]" % str(resp))
+    module.exit_json(changed=True, result=resp, message="Group created. Response: [%s]" % str(resp))
 
   elif state == 'absent': 
     # Delete the group
