@@ -74,13 +74,13 @@ def main():
   mgr_hostname = module.params['hostname']
   mgr_username = module.params['username']
   mgr_password = module.params['password']
-  
+  mgr_domain = module.params['domain']
+
   argument_spec.update (
     dict(
       mgr_domain = dict(type='str', default='domain')
     )
   )
-
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
   changed = False
