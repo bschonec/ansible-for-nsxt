@@ -122,13 +122,13 @@ def main():
   display_name = module.params['display_name']
 
 
+  module.log(f"DEBUG domain = {domain}")
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
   group_with_display_name = get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
 
   if state == 'present':
 
-    module.log(f"DEBUG domain = {domain}")
 
     # add the group
     if group_with_display_name:
