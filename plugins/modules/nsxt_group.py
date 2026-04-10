@@ -136,6 +136,5 @@ def main():
     module.log(f"Display Name: {display_name}")
 
 
-  module.exit_json(changed=changed, **resp)
 if __name__ == '__main__':
 	main()
