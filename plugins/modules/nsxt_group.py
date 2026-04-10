@@ -93,10 +93,6 @@ def get_group_with_display_name(module, manager_url, mgr_username, mgr_password,
   result: returns the group object with the display name provided
   '''
   certificates = get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
-  for certificate in certificates['results']:
-     if certificate.__contains__('display_name') and certificate['display_name'] == display_name:
-        print(certificate)
-        return certificate
   return None
 
 def main():
