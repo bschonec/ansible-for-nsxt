@@ -96,6 +96,7 @@ def get_group_with_display_name(module, manager_url, mgr_username, mgr_password,
   for certificate in certificates['results']:
      if certificate.__contains__('display_name') and certificate['display_name'] == display_name:
         module.warn(f"certificate is: {certificate}")
+        module.log("certificate is: {certificate}")
         return certificate
   return None
 
