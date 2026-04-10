@@ -76,6 +76,7 @@ def main():
   mgr_password = module.params['password']
   validate_certs = module.params['validate_certs']
   mgr_domain = 'default'
+  
   #mgr_domain = module.params['domain']
 
   manager_url = 'https://nsx.nfii.com/policy/api/v1'.format(mgr_hostname)
