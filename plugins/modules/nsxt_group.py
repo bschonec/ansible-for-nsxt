@@ -130,19 +130,19 @@ def main():
   if state == 'present':
 
     # The NSX API will allow us to use the PATCH method to both create and modify the group.
-    foo = {
+    payload = json.dumps({
       'description': 'LISA',
       'display_name': 'BRIAN'
-    }
+    })
 
     try:
       headers = dict(Accept="application/json")
       headers['Content-Type'] = 'application/json'
       request_data = json.dumps(certificate_params)
-      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=request_data, headers=headers, method='PATCH',
+      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=payload, headers=headers, method='PATCH',
                               url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
     except Exception as err:
-      module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), request_data))
+      module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
 
     time.sleep(5)
     module.exit_json(changed=True, result=resp, message="certificate created. Response: [%s]" % str(resp))
