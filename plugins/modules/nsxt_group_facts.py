@@ -72,14 +72,13 @@ def main():
   module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
   mgr_hostname = module.params['hostname']
-  mgr_hostname = 'nsx.nfii.com'
   mgr_username = module.params['username']
   mgr_password = module.params['password']
   validate_certs = module.params['validate_certs']
   mgr_domain = 'default'
   #mgr_domain = module.params['domain']
 
-  manager_url = 'https://{}/api/v1'.format(mgr_hostname)
+  manager_url = 'https://nsx.nfii.com/api/v1'.format(mgr_hostname)
 
   changed = False
   try:
