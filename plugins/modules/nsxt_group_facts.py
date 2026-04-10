@@ -77,7 +77,7 @@ def main():
   
   argument_spec.update (
     dict(
-      mgr_domain = dict(type='str', default='domain)
+      mgr_domain = dict(type='str', default='domain')
     )
   )
 
