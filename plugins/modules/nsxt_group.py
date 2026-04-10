@@ -135,6 +135,7 @@ def main():
     module.log(f"Domain: {domain}")
     module.log(f"Display Name: {display_name}")
 
+    module.exit_json(changed=True, result=resp, message="certificate created. Response: [%s]" % str(resp))
 
 if __name__ == '__main__':
 	main()
