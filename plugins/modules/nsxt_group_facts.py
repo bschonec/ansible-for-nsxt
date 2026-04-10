@@ -68,6 +68,7 @@ from ansible.module_utils._text import to_native
 
 def main():
   argument_spec = vmware_argument_spec()
+  argument_spec.update ( domain = dict(type='str', default='domain'))
 
   module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
