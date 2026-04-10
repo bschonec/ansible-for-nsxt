@@ -68,7 +68,7 @@ from ansible.module_utils._text import to_native
 
 def main():
   argument_spec = vmware_argument_spec()
-  argument_spec.update ( domain        = dict(type='str', default='domain'),
+  argument_spec.update ( domain        = dict(type='str', default='default'),
                          validate_certs= dict(type='bool', requried=False, default=True),
   )
 
@@ -77,8 +77,8 @@ def main():
   mgr_hostname = module.params['hostname']
   mgr_username = module.params['username']
   mgr_password = module.params['password']
-  validate_certs = module.params['validate_certs']
   mgr_domain = module.params['domain']
+  validate_certs = module.params['validate_certs']
 
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
