@@ -77,6 +77,7 @@ def main():
   mgr_hostname = module.params['hostname']
   mgr_username = module.params['username']
   mgr_password = module.params['password']
+  validate_certs = module.params['validate_certs']
   mgr_domain = module.params['domain']
 
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
