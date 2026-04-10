@@ -132,6 +132,10 @@ def main():
 
     # add the group
     if group_with_display_name:
+      foo = {
+        'description': 'junk',
+        'display_name': 'BRIAN'
+      }
       module.fail_json(msg="Group with display name \'%s\' already exists." % display_name)  
     try:
       headers = dict(Accept="application/json")
