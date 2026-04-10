@@ -130,7 +130,7 @@ def main():
     # The NSX API will allow us to use the PATCH method to both create and modify the group.
     payload = json.dumps({
       'description': 'LISA',
-      'display_name': 'BRIAN'
+      'display_name': 'XXXXXXXXXXXXXXXBRIAN'
     })
 
     try:
@@ -141,7 +141,6 @@ def main():
     except Exception as err:
       module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
 
-    time.sleep(5)
     module.exit_json(changed=True, result=resp, message="Group created. Response: [%s]" % str(resp))
 
   elif state == 'absent': 
@@ -155,7 +154,6 @@ def main():
     except Exception as err:
       module.fail_json(msg="Failed to delete certificate with display name \'%s\'. Error[%s]." % (display_name, to_native(err)))
 
-    time.sleep(5)
     module.exit_json(changed=True, object_name=certificate_id, message="Certificate with certificate id: %s deleted." % certificate_id)
 if __name__ == '__main__':
 	main()
