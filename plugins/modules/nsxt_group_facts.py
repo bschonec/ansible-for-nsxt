@@ -23,17 +23,11 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: nsxt_group_facts
-short_description: List Hostswitch Profiles
-description: Returns information about the configured hostswitch profiles. Hostswitch
-              profiles define networking policies for hostswitches (sometimes referred to
-              as bridges in OVS). Currently, only uplink teaming is supported. Uplink
-              teaming allows NSX to load balance traffic across different physical NICs
-              (PNICs) on the hypervisor hosts. Multiple teaming policies are supported,
-              including LACP active, LACP passive, load balancing based on source ID, and
-              failover order.
+short_description: List groups
+description: Returns information about the configured group profiles.
 
 version_added: "2.7"
-author: Rahul Raghuvanshi
+author: Brian Schonecker
 options:
     hostname:
         description: Deployed NSX manager hostname.
@@ -47,12 +41,17 @@ options:
         description: The password to authenticate with the NSX manager.
         required: true
         type: str
+    domain:
+        description: The domain to search for the groups.
+        required: false
+        type: str
+        default: default
 
 '''
 
 EXAMPLES = '''
-- name: List Hostswitch Profiles
-  nsxt_uplink_profiles_facts:
+- name: List Group Profiles
+  nsxt_group_facts:
       hostname: "10.192.167.137"
       username: "admin"
       password: "Admin!23Admin"
@@ -76,12 +75,14 @@ def main():
   mgr_username = module.params['username']
   mgr_password = module.params['password']
   validate_certs = module.params['validate_certs']
+  mgr_domain = 'default'
+  #mgr_domain = module.params['domain']
 
   manager_url = 'https://{}/api/v1'.format(mgr_hostname)
 
   changed = False
   try:
-    (rc, resp) = request(manager_url+ '/host-switch-profiles', headers=dict(Accept='application/json'),
+    (rc, resp) = request(manager_url+ '/policy/api/v1/infra/domains/default/groups', headers=dict(Accept='application/json'),
                     url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
   except Exception as err:
     module.fail_json(msg='Error accessing host switch profiles. Error [%s]' % (to_native(err)))
