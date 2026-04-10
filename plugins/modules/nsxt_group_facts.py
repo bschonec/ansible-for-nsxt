@@ -72,6 +72,7 @@ def main():
   module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
   mgr_hostname = module.params['hostname']
+  mgr_hostname = 'asdfasfdsafasfasd.asdfasfdasfd.asdfasdf'
   mgr_username = module.params['username']
   mgr_password = module.params['password']
   validate_certs = module.params['validate_certs']
