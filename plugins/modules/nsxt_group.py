@@ -129,29 +129,36 @@ def main():
 
   if state == 'present':
 
+    # The NSX API will allow us to use the PATCH method to both create and modify the group.
+    foo = {
+      'description': 'LISA',
+      'display_name': 'BRIAN'
+    }
 
-    # add the group
-    if group_with_display_name:
-      headers = dict(Accept="application/json")
-      headers['Content-Type'] = 'application/json'
-      foo = json.dumps({
-        'description': 'LISA',
-        'display_name': 'BRIAN'
-      })
-      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=foo, headers=headers, method='PATCH',
-                              url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
-      #module.fail_json(msg="Group with display name \'%s\' already exists." % display_name)  
     try:
       headers = dict(Accept="application/json")
       headers['Content-Type'] = 'application/json'
       request_data = json.dumps(certificate_params)
-      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/group/' + display_name, data=request_data, headers=headers, method='POST',
+      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=request_data, headers=headers, method='PATCH',
                               url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
     except Exception as err:
-      module.fail_json(msg="Failed to add certificate.\n Error: [%s].\n Request_body[%s]." % (to_native(err), request_data))
+      module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), request_data))
 
     time.sleep(5)
     module.exit_json(changed=True, result=resp, message="certificate created. Response: [%s]" % str(resp))
 
+  elif state == 'absent': 
+    # Delete the group
+    if not group_with_display_name:
+      module.fail_json(msg="Group with display name \'%s\' doesn't exists." % display_name)
+    group_id = group_with_display_name['id']
+    try:
+       (rc, resp) = request(manager_url+ '/trust-management/certificates/' + certificate_id, method='DELETE',
+                            url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
+    except Exception as err:
+      module.fail_json(msg="Failed to delete certificate with display name \'%s\'. Error[%s]." % (display_name, to_native(err)))
+
+    time.sleep(5)
+    module.exit_json(changed=True, object_name=certificate_id, message="Certificate with certificate id: %s deleted." % certificate_id)
 if __name__ == '__main__':
 	main()
