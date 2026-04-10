@@ -132,7 +132,7 @@ def main():
 
     # Does the group already exist?  If not, then there's no need to create it.
     if group_with_display_name:
-      module.exit_json(changed=False, message="Group already exists. Response: [%s]" % str(group_with_display_name))
+      module.exit_json(changed=False, message="Group already exists. Response: [%s]" % str(json.dumps(group_with_display_name)))
 
     # The NSX API will allow us to use the PATCH method to both create and modify the group.
     payload = json.dumps({
