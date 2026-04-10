@@ -121,8 +121,6 @@ def main():
   description = module.params['description']
   display_name = module.params['display_name']
 
-
-  module.log(f"DEBUG domain = {domain}")
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
   group_with_display_name = get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
@@ -130,10 +128,10 @@ def main():
   if state == 'present':
 
     # The NSX API will allow us to use the PATCH method to both create and modify the group.
-    payload = json.dumps({
+    payload = {
       'description': 'LISA',
       'display_name': 'BRIAN'
-    })
+    }
 
     try:
       headers = dict(Accept="application/json")
