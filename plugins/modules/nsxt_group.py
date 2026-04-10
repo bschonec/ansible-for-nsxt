@@ -125,6 +125,22 @@ def main():
 
   group_with_display_name = get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
 
+  if state == 'present':
+    # add the certificate
+    if group_with_display_name:
+      module.fail_json(msg="Certificate with display name \'%s\' already exists." % display_name)  
+    try:
+      certificate_params = update_params_with_pem_encoding(certificate_params)
+      headers = dict(Accept="application/json")
+      headers['Content-Type'] = 'application/json'
+      request_data = json.dumps(certificate_params)
+      (rc, resp) = request(manager_url+ '/trust-management/certificates?action=import', data=request_data, headers=headers, method='POST',
+                              url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
+    except Exception as err:
+      module.fail_json(msg="Failed to add certificate.\n Error: [%s].\n Request_body[%s]." % (to_native(err), request_data))
+
+    time.sleep(5)
+    module.exit_json(changed=True, result=resp, message="certificate created. Response: [%s]" % str(resp))
 
   module.exit_json(changed=changed, **resp)
 if __name__ == '__main__':
