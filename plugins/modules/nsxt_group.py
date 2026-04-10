@@ -80,6 +80,23 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.vmware.ansible_for_nsxt.plugins.module_utils.vmware_nsxt import vmware_argument_spec, request
 from ansible.module_utils._text import to_native
 
+def get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name):
+  try:
+    (rc, resp) = request(manager_url+ '/trust-management/certificates', headers=dict(Accept='application/json'),
+                      url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
+  except Exception as err:
+    module.fail_json(msg='Error accessing trust management certificates. Error [%s]' % (to_native(err)))
+  return resp
+
+def get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, display_name):
+  '''
+  result: returns the group object with the display name provided
+  '''
+  groups = get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
+  for certificate in certificates['results']:
+     if certificate.__contains__('display_name') and certificate['display_name'] == display_name:
+        return certificate
+  return None
 
 def main():
   argument_spec = vmware_argument_spec()
@@ -106,7 +123,7 @@ def main():
 
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
-  group_with_display_name = get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, display_name)
+  group_with_display_name = get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
 
 
   module.exit_json(changed=changed, **resp)
