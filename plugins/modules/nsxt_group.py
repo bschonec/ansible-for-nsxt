@@ -102,11 +102,12 @@ def main():
   argument_spec = vmware_argument_spec()
   argument_spec.update(
     dict(
-    ( state=dict(required=True, choices=['present', 'absent']),
+      (state=dict(required=True, choices=['present', 'absent']),
                          domain        = dict(type='str', default='default'),
                          validate_certs= dict(type='bool', requried=False, default=True),
                          description=dict(required=False, type='str'),
                          display_name=dict(required=False, type='str'),
+      )
     )
   )
 
