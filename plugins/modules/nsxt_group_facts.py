@@ -22,7 +22,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = '''
 ---
-module: nsxt_uplink_profiles_facts
+module: nsxt_group_facts
 short_description: List Hostswitch Profiles
 description: Returns information about the configured hostswitch profiles. Hostswitch
               profiles define networking policies for hostswitches (sometimes referred to
