@@ -130,6 +130,11 @@ def main():
   group_with_display_name = get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
 
   if state == 'present':
+
+    module.log(f"Connecting to NSX: {mgr_hostname}")
+    module.log(f"Domain: {domain}")
+    module.log(f"Display Name: {display_name}")
+
     # add the group
     if group_with_display_name:
       module.fail_json(msg="Group with display name \'%s\' already exists." % display_name)  
