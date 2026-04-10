@@ -68,6 +68,7 @@ from ansible.module_utils._text import to_native
 
 def main():
   argument_spec = vmware_argument_spec()
+  argument_spec.update ( mgr_domain = dict(type='str', default='domain'))
 
   module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
@@ -76,11 +77,6 @@ def main():
   mgr_password = module.params['password']
   mgr_domain = module.params['domain']
 
-  argument_spec.update (
-    dict(
-      mgr_domain = dict(type='str', default='domain')
-    )
-  )
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
   changed = False
