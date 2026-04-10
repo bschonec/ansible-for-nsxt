@@ -121,9 +121,6 @@ def main():
   description = module.params['description']
   display_name = module.params['display_name']
 
-  module.log(f"Connecting to NSX: {mgr_hostname}")
-  module.log(f"Domain: {domain}")
-  module.log(f"Display Name: {display_name}")
 
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
@@ -131,9 +128,7 @@ def main():
 
   if state == 'present':
 
-    module.log(f"Connecting to NSX: {mgr_hostname}")
-    module.log(f"Domain: {domain}")
-    module.log(f"Display Name: {display_name}")
+    module.warn(f"DEBUG domain = {mgr_domain}")
 
     # add the group
     if group_with_display_name:
