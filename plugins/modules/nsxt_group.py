@@ -92,10 +92,10 @@ def get_group_with_display_name(module, manager_url, mgr_username, mgr_password,
   '''
   result: returns the group object with the display name provided
   '''
-  certificates = get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
-  for certificate in certificates['results']:
-     if certificate.__contains__('display_name') and certificate['display_name'] == display_name:
-        return certificate
+  groups = get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
+  for group in groups['results']:
+     if group.__contains__('display_name') and group['display_name'] == display_name:
+        return group
   return None
 
 def main():
@@ -138,14 +138,13 @@ def main():
     try:
       headers = dict(Accept="application/json")
       headers['Content-Type'] = 'application/json'
-      request_data = json.dumps(certificate_params)
       (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=payload, headers=headers, method='PATCH',
                               url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
     except Exception as err:
       module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
 
     time.sleep(5)
-    module.exit_json(changed=True, result=resp, message="certificate created. Response: [%s]" % str(resp))
+    module.exit_json(changed=True, result=resp, message="Group created. Response: [%s]" % str(resp))
 
   elif state == 'absent': 
     # Delete the group
