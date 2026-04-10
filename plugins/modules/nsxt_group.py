@@ -128,6 +128,7 @@ def main():
 
   if state == 'present':
 
+    module.warn(f"DEBUG domain = {domain}")
 
     # add the group
     if group_with_display_name:
