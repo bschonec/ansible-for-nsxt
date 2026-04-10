@@ -127,10 +127,15 @@ def main():
 
   if state == 'present':
 
+    # Does the group already exist?  If not, then there's no need to create it.
+# POST - create if doesn't exist
+# PATCH - update existing or create if doesn't exist
+# DELETE - captain obvious
+
     # The NSX API will allow us to use the PATCH method to both create and modify the group.
     payload = json.dumps({
-      'description': 'LISA',
-      'display_name': 'XXXXXXXXXXXXXXXBRIAN'
+      'description': description
+      'display_name': display_name
     })
 
     try:
@@ -141,19 +146,23 @@ def main():
     except Exception as err:
       module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
 
-    module.exit_json(changed=True, result=resp, message="Group created. Response: [%s]" % str(resp))
+    module.exit_json(changed=True, result=resp, message="Group created. Response: [%s]" % str(rc))
 
   elif state == 'absent': 
     # Delete the group
+    # Does the group already exist?  If not, then there's no need to delete it.
     if not group_with_display_name:
       module.fail_json(msg="Group with display name \'%s\' doesn't exists." % display_name)
     group_id = group_with_display_name['id']
     try:
-       (rc, resp) = request(manager_url+ '/trust-management/certificates/' + certificate_id, method='DELETE',
-                            url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
+      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=payload, headers=headers, method='DELETE',
+                              url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
     except Exception as err:
-      module.fail_json(msg="Failed to delete certificate with display name \'%s\'. Error[%s]." % (display_name, to_native(err)))
+      module.fail_json(msg="Failed to delete group with display name \'%s\'. Error[%s]." % (display_name, to_native(err)))
 
     module.exit_json(changed=True, object_name=certificate_id, message="Certificate with certificate id: %s deleted." % certificate_id)
+
+
+
 if __name__ == '__main__':
 	main()
