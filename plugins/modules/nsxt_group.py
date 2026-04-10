@@ -128,10 +128,10 @@ def main():
   if state == 'present':
 
     # The NSX API will allow us to use the PATCH method to both create and modify the group.
-    payload = {
+    payload = json.dumps({
       'description': 'LISA',
       'display_name': 'BRIAN'
-    }
+    })
 
     try:
       headers = dict(Accept="application/json")
