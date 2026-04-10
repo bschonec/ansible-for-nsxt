@@ -82,10 +82,10 @@ from ansible.module_utils._text import to_native
 
 def get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name):
   try:
-    (rc, resp) = request(manager_url+ '/trust-management/certificates', headers=dict(Accept='application/json'),
+    (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups', headers=dict(Accept='application/json'),
                       url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
   except Exception as err:
-    module.fail_json(msg='Error accessing trust management certificates. Error [%s]' % (to_native(err)))
+    module.fail_json(msg='Error accessing groups for domain ' + domain + '. Error [%s]' % (to_native(err)))
   return resp
 
 def get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name):
@@ -126,9 +126,9 @@ def main():
   group_with_display_name = get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
 
   if state == 'present':
-    # add the certificate
+    # add the group
     if group_with_display_name:
-      module.fail_json(msg="Certificate with display name \'%s\' already exists." % display_name)  
+      module.fail_json(msg="Group with display name \'%s\' already exists." % display_name)  
     try:
       certificate_params = update_params_with_pem_encoding(certificate_params)
       headers = dict(Accept="application/json")
