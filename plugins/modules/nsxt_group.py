@@ -95,8 +95,6 @@ def get_group_with_display_name(module, manager_url, mgr_username, mgr_password,
   certificates = get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
   for certificate in certificates['results']:
      if certificate.__contains__('display_name') and certificate['display_name'] == display_name:
-        module.warn(f"certificate is: {certificate}")
-        module.log("certificate is: {certificate}")
         return certificate
   return None
 
@@ -122,6 +120,10 @@ def main():
   validate_certs = module.params['validate_certs']
   description = module.params['description']
   display_name = module.params['display_name']
+
+  module.log(f"Connecting to NSX: {mgr_hostname}")
+  module.log(f"Domain: {domain}")
+  module.log(f"Display Name: {display_name}")
 
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
