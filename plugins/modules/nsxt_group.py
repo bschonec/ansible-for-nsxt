@@ -146,7 +146,7 @@ def main():
     except Exception as err:
       module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
 
-    module.exit_json(changed=True, result=resp, message="Group created. Response: [%s]" % str(resp))
+    module.exit_json(changed=True, result=rc, message="Group created. Response: [%s]" % str(resp))
 
   elif state == 'absent': 
     # Delete the group
