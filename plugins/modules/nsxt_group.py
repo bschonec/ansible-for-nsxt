@@ -144,6 +144,8 @@ def main():
       'display_name': display_name,
     }
 
+   payload = json.dumps(desired_state)
+
     # Does the group already exist?  If not, then there's no need to create it.  BUT, we must
     # check existing group parameters for any settings that need changing.
     if current_state:
@@ -154,7 +156,6 @@ def main():
 
       if changed:
         # Yeah, we need to update the group's properties.
-        payload = json.dumps(desired_state)
 
         # The NSX API will allow us to use the PATCH method to both create and modify the group.  At this point, the group
         # either doesn't exist or the group exists and needs updating.  The PATCH call will do either/both.
