@@ -95,7 +95,7 @@ def get_current_state(module, manager_url, mgr_username, mgr_password, validate_
     (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, headers=dict(Accept='application/json'),
                  url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
   except Exception as err:
-    #module.fail_json(msg='Error accessing group ' + name)
+    # No group found.
     return None
 
   return resp
@@ -140,7 +140,6 @@ def main():
   # Check to see if the group already exists.  We don't care about its properties (yet).
   current_state = get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name)
 
-  group_uri = manager_url + '/infra/domains/' + domain + '/groups/' + name
   # What is the desired state from the Ansible task?
   if state == 'present':
 
