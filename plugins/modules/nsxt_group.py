@@ -134,6 +134,7 @@ def main():
   # Check to see if the group already exists.  We don't care about its properties (yet).
   current_state = get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
 
+  module.warn(f"DEBUG changed = {current_state}")
   # What is the desired state from the Ansible task?
   if state == 'present':
 
@@ -153,7 +154,6 @@ def main():
       # Is what already exists different than what we want?
       changed = normalize(current_state) != normalize(desired_state)
 
-      module.warn(f"DEBUG changed = {changed}")
       if changed:
         # Yeah, we need to update the group's properties.
 
