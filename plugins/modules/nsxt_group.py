@@ -144,7 +144,7 @@ def main():
       'display_name': display_name,
     }
 
-   payload = json.dumps(desired_state)
+    payload = json.dumps(desired_state)
 
     # Does the group already exist?  If not, then there's no need to create it.  BUT, we must
     # check existing group parameters for any settings that need changing.
