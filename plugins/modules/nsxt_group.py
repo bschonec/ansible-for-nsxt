@@ -108,7 +108,6 @@ def normalize(obj):
   if not obj:
         return {}
   return {
-    "name": obj.get("name"),
     "display_name": obj.get("display_name"),
     "description": obj.get("description"),
   }
