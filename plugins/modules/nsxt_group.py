@@ -86,21 +86,13 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.vmware.ansible_for_nsxt.plugins.module_utils.vmware_nsxt import vmware_argument_spec, request
 from ansible.module_utils._text import to_native
 
-def get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name):
-  try:
-    (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups', headers=dict(Accept='application/json'),
-                      url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
-  except Exception as err:
-    module.fail_json(msg='Error accessing groups for domain ' + domain + '. Error [%s]' % (to_native(err)))
-  return resp
-
 def get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name):
   '''
   result: returns the group object with the display name provided
   '''
 
   try:
-    (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, headers=dict(Accept='application/json'),
+    (rc, resp) = request(group_uri, headers=dict(Accept='application/json'),
                  url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
   except Exception as err:
     #module.fail_json(msg='Error accessing group ' + name)
@@ -148,6 +140,8 @@ def main():
   # Check to see if the group already exists.  We don't care about its properties (yet).
   current_state = get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name)
 
+  group_uri = manager_url + '/infra/domains/' + domain + '/groups/' + name
+
   # What is the desired state from the Ansible task?
   if state == 'present':
 
@@ -168,12 +162,9 @@ def main():
       changed = normalize(current_state) != normalize(desired_state)
 
       if changed:
-        # Yeah, we need to update the group's properties.
-
-        # The NSX API will allow us to use the PATCH method to both create and modify the group.  At this point, the group
-        # either doesn't exist or the group exists and needs updating.  The PATCH call will do either/both.
+        # The group already exists but we need to update its properties.
         try:
-          (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, data=payload, headers=headers, method='PATCH',
+          (rc, resp) = request(group_uri, data=payload, headers=headers, method='PATCH',
                                   url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
           module.exit_json(changed=True, message="Group already exists but needed updating.")
 
@@ -188,7 +179,7 @@ def main():
 
       # Group not yet created    
       try:
-        (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, data=payload, headers=headers, method='PUT',
+        (rc, resp) = request(group_uri, data=payload, headers=headers, method='PUT',
                                 url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
         module.exit_json(changed=True, message="Group created.")
 
@@ -203,7 +194,7 @@ def main():
       module.exit_json(changed=False, message="Group didn't already exist")
 
     try:
-      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, headers=headers, method='DELETE',
+      (rc, resp) = request(group_uri, headers=headers, method='DELETE',
                               url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
     except Exception as err:
       module.fail_json(msg="Failed to delete group with display name \'%s\'. Error[%s]." % (name, to_native(err)))
