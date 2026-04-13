@@ -150,7 +150,7 @@ def main():
       }
 
       # Is what already exists different than what we want?
-      changed = normalize(current) != nomralize(desired)
+      changed = normalize(current_state) != nomralize(desired_state)
 
       if changed:
 
