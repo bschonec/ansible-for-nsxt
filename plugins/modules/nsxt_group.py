@@ -175,7 +175,7 @@ def main():
   elif state == 'absent': 
     # Delete the group
     # Does the group already exist?  If not, then there's no need to delete it.
-    if not current_state
+    if not current_state:
       module.exit_json(changed=False, message="Group didn't already exist")
 
     try:
