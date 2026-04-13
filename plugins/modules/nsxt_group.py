@@ -49,6 +49,10 @@ options:
         description: The description of the group.
         required: false
         type: str
+    name:
+        description: The name of the group.
+        required: true 
+        type: str
     display_name:
         description: The display name of the group.
         required: false
@@ -67,7 +71,9 @@ EXAMPLES = '''
       hostname: "10.192.167.137"
       username: "admin"
       password: "Admin!23Admin"
-      display_name: "my_group"
+      name: "my_group"
+      display_name: "human-friendly-name"
+      description: "Group for network devices"
       state: present
       domain: "my_domain"
       validate_certs: False
@@ -80,7 +86,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.vmware.ansible_for_nsxt.plugins.module_utils.vmware_nsxt import vmware_argument_spec, request
 from ansible.module_utils._text import to_native
 
-def get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name):
+def get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name):
   try:
     (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups', headers=dict(Accept='application/json'),
                       url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
@@ -88,13 +94,13 @@ def get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, 
     module.fail_json(msg='Error accessing groups for domain ' + domain + '. Error [%s]' % (to_native(err)))
   return resp
 
-def get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name):
+def get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name):
   '''
   result: returns the group object with the display name provided
   '''
-  certificates = get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
+  certificates = get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name)
   for certificate in certificates['results']:
-     if certificate.__contains__('display_name') and certificate['display_name'] == display_name:
+     if certificate.__contains__('name') and certificate['name'] == name:
         return certificate
   return None
 
@@ -102,8 +108,9 @@ def normalize(obj):
   if not obj:
         return {}
   return {
-    "description": obj.get("description"),
+    "name": obj.get("name"),
     "display_name": obj.get("display_name"),
+    "description": obj.get("description"),
   }
 
 def main():
@@ -113,8 +120,9 @@ def main():
           state=dict(required=True, choices=['present', 'absent']),
           domain=dict(type='str', default='default'),
           validate_certs=dict(type='bool', required=False, default=True),
-          description=dict(required=False, type='str'),
+          name=dict(required=True, type='str'),
           display_name=dict(required=False, type='str'),
+          description=dict(required=False, type='str'),
       )
   )
 
@@ -127,12 +135,13 @@ def main():
   domain = module.params['domain']
   validate_certs = module.params['validate_certs']
   description = module.params['description']
-  display_name = module.params['display_name']
+  name = module.params['name']
+  display_name = module.params.get('display_name') or module.params['name']
 
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
   # Check to see if the group already exists.  We don't care about its properties (yet).
-  current_state = get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
+  current_state = get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name)
 
   module.warn(f"DEBUG changed = {current_state}")
   # What is the desired state from the Ansible task?
@@ -140,8 +149,9 @@ def main():
 
     # This is the dict that we create to compare what the current state is vs. the desired state.
     desired_state = {
-      'description': description,
+      'name': name,
       'display_name': display_name,
+      'description': description,
     }
 
     payload = json.dumps(desired_state)
@@ -162,7 +172,7 @@ def main():
         try:
           headers = dict(Accept="application/json")
           headers['Content-Type'] = 'application/json'
-          (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=payload, headers=headers, method='PATCH',
+          (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, data=payload, headers=headers, method='PATCH',
                                   url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
           module.exit_json(changed=True, message="Group already exists but needed updating.")
 
@@ -179,7 +189,7 @@ def main():
       try:
         headers = dict(Accept="application/json")
         headers['Content-Type'] = 'application/json'
-        (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=payload, headers=headers, method='PUT',
+        (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, data=payload, headers=headers, method='PUT',
                                 url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
         module.exit_json(changed=True, message="Group created.")
 
@@ -193,10 +203,10 @@ def main():
       module.exit_json(changed=False, message="Group didn't already exist")
 
     try:
-      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, headers=headers, method='DELETE',
+      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, headers=headers, method='DELETE',
                               url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
     except Exception as err:
-      module.fail_json(msg="Failed to delete group with display name \'%s\'. Error[%s]." % (display_name, to_native(err)))
+      module.fail_json(msg="Failed to delete group with display name \'%s\'. Error[%s]." % (name, to_native(err)))
 
 if __name__ == '__main__':
 	main()
