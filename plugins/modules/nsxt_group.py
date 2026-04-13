@@ -148,6 +148,7 @@ def main():
     # Does the group already exist?  If not, then there's no need to create it.  BUT, we must
     # check existing group parameters for any settings that need changing.
     module.log("This is a debug message")
+    module.warn(f"DEBUG current = {current}")
     if current_state:
 
       # The group already exists.  Now we have to check to see if we need to update any parameters.
