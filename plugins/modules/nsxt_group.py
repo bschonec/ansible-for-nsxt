@@ -148,7 +148,6 @@ def main():
 
     # This is the dict that we create to compare what the current state is vs. the desired state.
     desired_state = {
-      'name': name,
       'display_name': display_name,
       'description': description,
     }
