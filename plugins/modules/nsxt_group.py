@@ -147,8 +147,6 @@ def main():
 
     # Does the group already exist?  If not, then there's no need to create it.  BUT, we must
     # check existing group parameters for any settings that need changing.
-    module.log("This is a debug message")
-    module.warn(f"DEBUG current = {payload}")
     if current_state:
 
       # The group already exists.  Now we have to check to see if we need to update any parameters.
@@ -156,6 +154,7 @@ def main():
       changed = normalize(current_state) != normalize(desired_state)
 
       if changed:
+    module.warn(f"DEBUG changed = {changed}")
         # Yeah, we need to update the group's properties.
 
         # The NSX API will allow us to use the PATCH method to both create and modify the group.  At this point, the group
