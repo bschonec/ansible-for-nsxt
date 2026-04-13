@@ -142,14 +142,14 @@ def main():
   display_name = module.params.get('display_name') or module.params['name']
 
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
+  headers = dict(Accept="application/json")
+  headers['Content-Type'] = 'application/json'
 
   # Check to see if the group already exists.  We don't care about its properties (yet).
   current_state = get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name)
 
-  module.warn(f"DEBUG changed = {current_state}")
   # What is the desired state from the Ansible task?
   if state == 'present':
-    module.warn(f"DEBUG state = {state}")
 
     # This is the dict that we create to compare what the current state is vs. the desired state.
     desired_state = {
@@ -162,21 +162,17 @@ def main():
     # Does the group already exist?  If not, then there's no need to create it.  BUT, we must
     # check existing group parameters for any settings that need changing.
     if current_state:
-      module.warn(f"DEBUG current_sate = {current_state}")
 
       # The group already exists.  Now we have to check to see if we need to update any parameters.
       # Is what already exists different than what we want?
       changed = normalize(current_state) != normalize(desired_state)
 
       if changed:
-        module.warn(f"DEBUG changed = true")
         # Yeah, we need to update the group's properties.
 
         # The NSX API will allow us to use the PATCH method to both create and modify the group.  At this point, the group
         # either doesn't exist or the group exists and needs updating.  The PATCH call will do either/both.
         try:
-          headers = dict(Accept="application/json")
-          headers['Content-Type'] = 'application/json'
           (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, data=payload, headers=headers, method='PATCH',
                                   url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
           module.exit_json(changed=True, message="Group already exists but needed updating.")
@@ -185,17 +181,13 @@ def main():
           module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
 
       else:
-        module.warn(f"DEBUG changed = false")
         # Group already exists and is in the desired state.
         module.exit_json(changed=False, message="Group already correct")
 
-    # Group not yet created    
     else:
-      module.warn(f"DEBUG create group")
 
+      # Group not yet created    
       try:
-        headers = dict(Accept="application/json")
-        headers['Content-Type'] = 'application/json'
         (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, data=payload, headers=headers, method='PUT',
                                 url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
         module.exit_json(changed=True, message="Group created.")
@@ -204,7 +196,6 @@ def main():
         module.fail_json(msg="Failed to create group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
 
   elif state == 'absent': 
-    module.warn(f"DEBUG state = absent")
 
     # Delete the group
     # Does the group already exist?  If not, then there's no need to delete it.
