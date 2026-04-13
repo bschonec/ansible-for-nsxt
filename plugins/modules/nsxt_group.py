@@ -145,6 +145,7 @@ def main():
   module.warn(f"DEBUG changed = {current_state}")
   # What is the desired state from the Ansible task?
   if state == 'present':
+    module.warn(f"DEBUG state = {state}")
 
     # This is the dict that we create to compare what the current state is vs. the desired state.
     desired_state = {
@@ -157,12 +158,14 @@ def main():
     # Does the group already exist?  If not, then there's no need to create it.  BUT, we must
     # check existing group parameters for any settings that need changing.
     if current_state:
+      module.warn(f"DEBUG current_sate = {current_state}")
 
       # The group already exists.  Now we have to check to see if we need to update any parameters.
       # Is what already exists different than what we want?
       changed = normalize(current_state) != normalize(desired_state)
 
       if changed:
+        module.warn(f"DEBUG changed = true")
         # Yeah, we need to update the group's properties.
 
         # The NSX API will allow us to use the PATCH method to both create and modify the group.  At this point, the group
@@ -178,11 +181,13 @@ def main():
           module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
 
       else:
+        module.warn(f"DEBUG changed = false")
         # Group already exists and is in the desired state.
         module.exit_json(changed=False, message="Group already correct")
 
     # Group not yet created    
     else:
+      module.warn(f"DEBUG create group")
 
       try:
         headers = dict(Accept="application/json")
@@ -195,6 +200,8 @@ def main():
         module.fail_json(msg="Failed to create group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
 
   elif state == 'absent': 
+    module.warn(f"DEBUG state = absent")
+
     # Delete the group
     # Does the group already exist?  If not, then there's no need to delete it.
     if not current_state:
