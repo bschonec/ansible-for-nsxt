@@ -100,7 +100,7 @@ def get_current_state(module, manager_url, mgr_username, mgr_password, validate_
   '''
 
   try:
-    (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups' + name, headers=dict(Accept='application/json'),
+    (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, headers=dict(Accept='application/json'),
                  url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
   except Exception as err:
     module.fail_json(msg='Error accessing group ' + name)
