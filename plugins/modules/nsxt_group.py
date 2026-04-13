@@ -86,14 +86,6 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.vmware.ansible_for_nsxt.plugins.module_utils.vmware_nsxt import vmware_argument_spec, request
 from ansible.module_utils._text import to_native
 
-def get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name):
-  try:
-    (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups', headers=dict(Accept='application/json'),
-                      url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
-  except Exception as err:
-    module.fail_json(msg='Error accessing groups for domain ' + domain + '. Error [%s]' % (to_native(err)))
-  return resp
-
 def get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name):
   '''
   result: returns the group object with the display name provided
@@ -148,7 +140,7 @@ def main():
   # Check to see if the group already exists.  We don't care about its properties (yet).
   current_state = get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name)
 
-  group_uri = manager_url+ '/infra/domains/' + domain + '/groups/' + name
+  group_uri = manager_url + '/infra/domains/' + domain + '/groups/' + name
   # What is the desired state from the Ansible task?
   if state == 'present':
 
