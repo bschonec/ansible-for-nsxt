@@ -104,7 +104,6 @@ def normalize(obj):
   return {
     "description": obj.get("description"),
     "display_name": obj.get("display_name"),
-
   }
 
 def main():
@@ -148,6 +147,7 @@ def main():
 
     # Does the group already exist?  If not, then there's no need to create it.  BUT, we must
     # check existing group parameters for any settings that need changing.
+    module.log("This is a debug message")
     if current_state:
 
       # The group already exists.  Now we have to check to see if we need to update any parameters.
@@ -193,7 +193,7 @@ def main():
       module.exit_json(changed=False, message="Group didn't already exist")
 
     try:
-      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=payload, headers=headers, method='DELETE',
+      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, headers=headers, method='DELETE',
                               url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
     except Exception as err:
       module.fail_json(msg="Failed to delete group with display name \'%s\'. Error[%s]." % (display_name, to_native(err)))
