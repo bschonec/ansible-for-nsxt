@@ -153,8 +153,8 @@ def main():
       # Is what already exists different than what we want?
       changed = normalize(current_state) != normalize(desired_state)
 
+      module.warn(f"DEBUG changed = {changed}")
       if changed:
-        module.warn(f"DEBUG changed = {changed}")
         # Yeah, we need to update the group's properties.
 
         # The NSX API will allow us to use the PATCH method to both create and modify the group.  At this point, the group
