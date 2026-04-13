@@ -108,6 +108,7 @@ def normalize(obj):
   if not obj:
         return {}
   return {
+    "name": obj.get("name"),
     "display_name": obj.get("display_name"),
     "description": obj.get("description"),
   }
@@ -135,7 +136,7 @@ def main():
   validate_certs = module.params['validate_certs']
   description = module.params['description']
   name = module.params['name']
-  display_name = module.params["name"]
+  display_name = module.params.get('display_name') or module.params['name']
 
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
