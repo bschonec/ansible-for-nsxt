@@ -98,11 +98,15 @@ def get_current_state(module, manager_url, mgr_username, mgr_password, validate_
   '''
   result: returns the group object with the display name provided
   '''
-  certificates = get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, domain, name)
-  for certificate in certificates['results']:
-     if certificate.__contains__('name') and certificate['name'] == name:
-        return certificate
-  return None
+
+  try:
+    (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups' + name, headers=dict(Accept='application/json'),
+                 url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
+  except Exception as err:
+    module.fail_json(msg='Error accessing group ' + name)
+    return None
+
+  return resp
 
 def normalize(obj):
   if not obj:
