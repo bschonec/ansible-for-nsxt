@@ -88,7 +88,7 @@ def get_groups(module, manager_url, mgr_username, mgr_password, validate_certs, 
     module.fail_json(msg='Error accessing groups for domain ' + domain + '. Error [%s]' % (to_native(err)))
   return resp
 
-def get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name):
+def get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name):
   '''
   result: returns the group object with the display name provided
   '''
@@ -97,6 +97,15 @@ def get_group_with_display_name(module, manager_url, mgr_username, mgr_password,
      if certificate.__contains__('display_name') and certificate['display_name'] == display_name:
         return certificate
   return None
+
+def normalize(obj):
+  if not obj:
+        return {}
+  return {
+    "description": obj.get("description"),
+    "display_name": obj.get("display_name"),
+
+  }
 
 def main():
   argument_spec = vmware_argument_spec()
@@ -123,48 +132,57 @@ def main():
 
   manager_url = 'https://{}/policy/api/v1'.format(mgr_hostname)
 
-  group_with_display_name = get_group_with_display_name(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
+  current_state = get_current_state(module, manager_url, mgr_username, mgr_password, validate_certs, domain, display_name)
 # POST - create if doesn't exist
 # PATCH - update existing or create if doesn't exist
 # DELETE - captain obvious
 
   if state == 'present':
 
-    # Does the group already exist?  If not, then there's no need to create it.
-    if group_with_display_name:
-      module.exit_json(changed=False, message="Group already exists. Response: [%s]" % group_with_display_name)
+    # Does the group already exist?  If not, then there's no need to create it.  BUT, we must
+    # check existing group parameters for any settings that need changing.
+    if current_state:
 
-    # The NSX API will allow us to use the PATCH method to both create and modify the group.
-    payload = json.dumps({
-      'description': description,
-      'display_name': display_name,
-    })
+      # Group already exists.  Now we have to check to see if we need to update any parameters.
+      desired_state = {
+        'description': description,
+        'display_name': display_name,
+      }
 
-    try:
-      headers = dict(Accept="application/json")
-      headers['Content-Type'] = 'application/json'
-      (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=payload, headers=headers, method='PATCH',
-                              url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
-    except Exception as err:
-      module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
+      # Is what already exists different than what we want?
+      changed = normalize(current) != nomralize(desired)
 
-    module.exit_json(changed=True, result=resp, message="Group created. Response: [%s]" % str(resp))
+      if changed:
+
+        payload = json.dumps(desired_state)
+
+        # The NSX API will allow us to use the PATCH method to both create and modify the group.  At this point, the group
+        # either doesn't exist or the group exists and needs updating.  The PATCH call will do either/both.
+        try:
+          headers = dict(Accept="application/json")
+          headers['Content-Type'] = 'application/json'
+          (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=payload, headers=headers, method='PATCH',
+                                  url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
+        except Exception as err:
+          module.fail_json(msg="Failed to add group.\n Error: [%s].\n Request_body[%s]." % (to_native(err), payload))
+
+        module.exit_json(changed=True, result=resp, message="Group created. Response: [%s]" % str(resp))
+
+      else:
+        # Group already exists and is in the desired state.
+        module.exit_json(changed=False, message="Group already correct")
 
   elif state == 'absent': 
     # Delete the group
     # Does the group already exist?  If not, then there's no need to delete it.
-    if not group_with_display_name:
-      module.fail_json(msg="Group with display name \'%s\' doesn't exists." % display_name)
-    group_id = group_with_display_name['id']
+    if not current_state
+      module.exit_json(changed=False, message="Group didn't already exist")
+
     try:
       (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + display_name, data=payload, headers=headers, method='DELETE',
                               url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
     except Exception as err:
       module.fail_json(msg="Failed to delete group with display name \'%s\'. Error[%s]." % (display_name, to_native(err)))
-
-    module.exit_json(changed=True, object_name=certificate_id, message="Certificate with certificate id: %s deleted." % certificate_id)
-
-
 
 if __name__ == '__main__':
 	main()
