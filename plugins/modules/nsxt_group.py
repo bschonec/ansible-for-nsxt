@@ -121,6 +121,12 @@ def main():
       )
   )
 
+  result = dict(
+      changed=False,
+      original_message='',
+      message=''
+  )
+
   module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
   # if the user is working with this module in only check mode we do not
