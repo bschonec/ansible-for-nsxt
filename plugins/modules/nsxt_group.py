@@ -194,6 +194,8 @@ def main():
     try:
       (rc, resp) = request(manager_url+ '/infra/domains/' + domain + '/groups/' + name, headers=headers, method='DELETE',
                               url_username=mgr_username, url_password=mgr_password, validate_certs=validate_certs, ignore_errors=True)
+      module.exit_json(changed=True, message="Group deleted.")
+
     except Exception as err:
       module.fail_json(msg="Failed to delete group with display name \'%s\'. Error[%s]." % (name, to_native(err)))
 
