@@ -123,6 +123,12 @@ def main():
 
   module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
+  # if the user is working with this module in only check mode we do not
+  # want to make any changes to the environment, just return the current
+  # state with no modifications
+  if module.check_mode:
+      module.exit_json(**result)
+
   mgr_hostname = module.params['hostname']
   mgr_username = module.params['username']
   mgr_password = module.params['password']
